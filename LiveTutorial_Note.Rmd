@@ -1,0 +1,163 @@
+---
+title: "Live Tutorial"
+author: "Imperial"
+date: "03/08/2019"
+output: html_document
+---
+
+# R Markdown
+
+### Code 1.1
+
+```{r setup, include = FALSE}
+library(ggplot2)
+library(dplyr)
+
+smaller <- diamonds %>% 
+  filter(carat <= 2.5)
+```
+
+We have data about `r nrow(diamonds)` diamonds. Only `r nrow(diamonds) - nrow(smaller)` are larger than 2.5 carats. The distribution of the remainder is shown below:
+
+```{r, echo = FALSE}
+smaller %>% 
+  ggplot(aes(carat)) + 
+  geom_freqpoly(binwidth = 0.01)
+```
+
+### Code 1.2
+
+```{r}
+knitr::kable(
+  mtcars[1:5, ], 
+  caption = "Motor Trend Car Data"
+)
+```
+
+
+### Code 2.1
+
+1. Run ggplot(data = mpg).  What do you see?
+```{r}
+ggplot(data = mpg)
+```
+
+2. How many rows are in mpg?  How many columns/variables?
+```{r eval = FALSE}
+# Look up documentation
+?mpg
+
+# dim() function
+dim(mpg)
+str(mpg)
+summary(mpg)
+```
+
+3. What does the **drv** variable describe?
+```{r eval = FALSE}
+# Look up documentation
+?mpg
+```
+
+4. Make a scatter plot of hwy on the x-axis, cyl on y-axis.
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = hwy, y = cyl))
+```
+
+5. Make a scatter plot of class vs. drv.  Why is this plot not very useful?
+
+```{r}
+ggplot(data = mpg) +
+  geom_point(mapping = aes(x = class, y = drv))
+
+# The plot is not useful because of overplotting. Both class and drv are categrical variables. 
+```
+
+
+### Code 3.1
+
+1. Run the following code. Why are the points not blue?
+```{r}
+ggplot(data = mpg)+ 
+  geom_point(mapping = aes(x = displ, y = hwy, color="blue"))
+
+# Because the colour is within aesthetics function. If you want to change the colour of all dots, put color = "blue" outside fo the aes() function.
+
+```
+
+2. What happens if you map an aesthetic something other than a variable name, like aes(color = disp <5?
+```{r}
+ggplot(data = mpg)+ 
+  geom_point(mapping = aes(x = displ, y = hwy, color= displ<5))
+```
+
+### Code 3.2
+
+```{r}
+ggplot(data = mpg)+
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_wrap(vars(class), nrow = 2)
+```
+
+### Code 3.3
+
+```{r}
+ggplot(data = mpg)+
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(rows = vars(drv), cols = vars(cyl), labeller = label_both)
+```
+
+### Code 3.4
+
+1. What happens if you facet on a continuous variable?
+
+```{r eval=FALSE}
+# It is possible, but not very useful. It may take awhile to process. 
+ggplot(data = mpg)+
+  geom_point(mapping = aes(x = displ, y = hwy)) +
+  facet_grid(rows = vars(hwy), cols = vars(displ), labeller = label_both)
+```
+
+
+2. What does the following code produce? What does . do in the formula?
+
+```{r eval=FALSE}
+p <- ggplot(mpg, aes(displ, cty)) + geom_point()
+
+# Use vars() to supply variables from the dataset:
+p + facet_grid(rows = vars(drv))
+p + facet_grid(cols = vars(cyl))
+p + facet_grid(vars(drv), vars(cyl))
+
+# The historical formula interface is also available:
+p + facet_grid(drv ~ .)
+p + facet_grid(. ~ cyl)
+p + facet_grid(drv ~ cyl)
+```
+
+### Code 4.1
+
+```{r}
+ggplot(data = mpg, mapping = aes(x = displ, y = hwy, color = drv)) + 
+  geom_point() +
+  geom_smooth(se = FALSE, show.legend = FALSE)
+```
+
+### Code 5.1
+
+1. What parameters to geom_jitter() control the amount of displacement?
+```{r eval=FALSE}
+?geom_jitter
+# Example
+ggplot(mpg, aes(cty, hwy)) + 
+  geom_jitter(width = 0.5, height = 0.5)
+```
+
+2. Try reproducing the following plot. (Hint: look up coord_flip()) 
+```{r}
+ggplot(data = diamonds) + 
+  geom_bar(mapping = aes(x = cut, fill = clarity), position = "fill") +
+  coord_flip()
+```
+
